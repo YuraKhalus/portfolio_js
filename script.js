@@ -12,42 +12,65 @@ async function fetchRepos(){
       });
 
       if (!response.ok){
+         alert(`Error: ${response.status}`);
          throw new Error(`Error: ${response.status}`);
       }
 
       const repos = await response.json();
 
       console.log(repos);
-      
-
-      const repoList =  document.getElementById("repo-list");
+      let i = 1;
       repos.forEach(repo => {
-         const li = document.createElement("li");
-         li.innerHTML = `
-            <a href="${repo.html_url}" target="_blank">${repo.name}</a>`
-
-         repoList.appendChild(li);
-      })
-
-      const repoWithDesc = document.querySelector(".repo-with-desc");
-      repos.forEach(repo => {
-         if (repo.description ){
+         if (repo.description && repo.topics.includes('done')) {
             console.log(repo);
-            const li = document.createElement("li");
-            li.className = "repo-item";
-            let data = new Date(repo.updated_at);
             
-            li.innerHTML = `
-               <a href="${repo.html_url}" target="_blank">${repo.name}</a> </br>
-               <a href="${repo.homepage}" target="_blank">Відвідати сайти</a>
-               <p>${repo.description}</p>
-               <p>Last update - ${data.toLocaleTimeString() + " " + data.toLocaleDateString()}</p>
-               <p>${repo.languages_url}</p>
-               <p>${repo.topics}</p>
+            let data = new Date(repo.updated_at);
+            const container_with_projects = document.querySelector('.container_with_projects');
+            const box_project = document.createElement('div');
+            box_project.classList.add('box_project');
+            
+            if(i % 2 === 0){
+               box_project.classList.add('left');
+               i++;
+            } else{
+               box_project.classList.add('right');
+               i++;
+            }
+            box_project.innerHTML = `
+               <div class="box_left">
+                  <img src="https://raw.githubusercontent.com/YuraKhalus/fakestore/main/src/img/readme/mainPage.png" alt="Mocap">
+               </div>
+               <div class="box_right">
+                  <div class="box_content">
+                     <h3 class="project_title">${repo.name}</h3>
+                     <p class="project_description">${repo.description}</p>
+                     <div class="tags">
+                     ${repo.topics.map(topic => `<span class="tag">${topic}</span>`).join('') }
+                     </div>
+                     <a href="${repo.html_url}" target="_blank">
+                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M24 19V25C24 25.5304 23.7893 26.0391 23.4142 26.4142C23.0391 26.7893 22.5304 27 22 27H11C10.4696 27 9.96086 26.7893 9.58579 26.4142C9.21071 26.0391 9 25.5304 9 25V14C9 13.4696 9.21071 12.9609 9.58579 12.5858C9.96086 12.2107 10.4696 12 11 12H17" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                           <path d="M21 9H27V15" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                           <path d="M16 20L27 9" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                     </a>
+                     <a href="${repo.homepage}" target="_blank">
+                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M24 19V25C24 25.5304 23.7893 26.0391 23.4142 26.4142C23.0391 26.7893 22.5304 27 22 27H11C10.4696 27 9.96086 26.7893 9.58579 26.4142C9.21071 26.0391 9 25.5304 9 25V14C9 13.4696 9.21071 12.9609 9.58579 12.5858C9.96086 12.2107 10.4696 12 11 12H17" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                           <path d="M21 9H27V15" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                           <path d="M16 20L27 9" stroke="#4B5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                     </a>
+                  </div>
+               </div>
+
+
+               
+               
 
             `;
             fetchReadme(repo.owner.login, repo.name);
-            repoWithDesc.appendChild(li);
+            container_with_projects.appendChild(box_project);
          }
       })
 
@@ -56,45 +79,9 @@ async function fetchRepos(){
       
    };
 }
-
 fetchRepos();
 
 
-async function fetchUser() {
-   const url = `https://api.github.com/users/${username}`;
-
-   try {
-      const response = await fetch(url, {
-         headers: {
-            Authorization: `Bearer ${token}`
-         }
-      });
-
-      if (!response.ok) {
-         throw new Error(`Error: ${response.status}`);
-      }
-
-      const user = await response.json();
-      console.log(user);
-      
-      
-      const userInfoDiv = document.getElementById("user-info");
-
-
-      userInfoDiv.innerHTML = `
-         <h2>${user.name || "No name"}</h2>
-         <p><strong>Username:</strong>${user.login}</p>
-         <p><strong>Bio:</strong>${user.bio}</p>
-         <img src="${user.avatar_url}" alt="" style="width: 100px; border-radius: 50%;">
-      `;
-
-   } catch (error) {
-      console.error("Error:", error);
-      
-   };
-}
-
-fetchUser();
 
 
 function fetchReadme(owner, repo){
@@ -136,9 +123,54 @@ function fetchReadme(owner, repo){
 
 function getImg(url){
    let box = document.querySelector('.repo-item');
-   // let img = document.createElement('img');
-   // img.src = url;
-   // box.appendChild(img);
-
    box.innerHTML += `<img src="${url}">`;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// async function fetchUser() {
+//    const url = `https://api.github.com/users/${username}`;
+
+//    try {
+//       const response = await fetch(url, {
+//          headers: {
+//             Authorization: `Bearer ${token}`
+//          }
+//       });
+
+//       if (!response.ok) {
+//          throw new Error(`Error: ${response.status}`);
+//       }
+
+//       const user = await response.json();
+//       console.log(user);
+      
+      
+//       const userInfoDiv = document.getElementById("user-info");
+
+
+//       userInfoDiv.innerHTML = `
+//          <h2>${user.name || "No name"}</h2>
+//          <p><strong>Username:</strong>${user.login}</p>
+//          <p><strong>Bio:</strong>${user.bio}</p>
+//          <img src="${user.avatar_url}" alt="" style="width: 100px; border-radius: 50%;">
+//       `;
+
+//    } catch (error) {
+//       console.error("Error:", error);
+      
+//    };
+// }
+
+// fetchUser();
